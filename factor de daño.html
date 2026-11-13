@@ -1,0 +1,229 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Herramienta académica para el análisis de productividad de pozos petroleros.">
+  <title>Productividad de Pozos | UNAM</title>
+  <link rel="stylesheet" href="formato2.css">
+  <!-- MathJax: representa ecuaciones con fracciones, exponentes y subíndices -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']]
+      },
+      chtml: { scale: 1.05 },
+      startup: { typeset: true }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="brand">
+    <div class="brand-mark">UNAM</div>
+    <div><strong>FACULTAD DE INGENIERÍA</strong><small>INGENIERÍA PETROLERA</small></div>
+  </div>
+  <div class="header-title">
+    <h1>PRODUCTIVIDAD DE POZOS</h1>
+    <p>Herramienta de cálculo y análisis de afluencia</p>
+  </div>
+</header>
+
+<nav class="menu" aria-label="Navegación principal">
+  <button class="nav-btn active" data-section="inicio">Inicio</button>
+  <button class="nav-btn" data-section="standing">Método de Standing</button>
+  <button class="nav-btn" data-section="jbg">Método JBG</button>
+  <button class="nav-btn" data-section="teoria">Fundamentos teóricos</button>
+  <button class="nav-btn" data-section="ejemplos">Ejemplos resueltos</button>
+</nav>
+
+<main>
+  <section id="inicio" class="seccion active">
+    <div class="hero">
+      <span class="eyebrow">ASIGNATURA · PRODUCTIVIDAD DE POZOS</span>
+      <h2>Análisis del comportamiento de afluencia</h2>
+      <p>Calcula el potencial de producción, analiza la eficiencia de flujo y evalúa las pérdidas de presión por flujo darciano y no darciano.</p>
+      <div class="hero-actions">
+        <button class="btn btn-gold" data-go="standing">Ir a Standing</button>
+        <button class="btn btn-outline" data-go="jbg">Ir a JBG</button>
+      </div>
+    </div>
+
+    <h2 class="section-heading">Herramientas de cálculo</h2>
+    <div class="cards">
+      <article class="card">
+        <div class="card-icon">01</div><h3>Método de Standing</h3>
+        <p>Considera la eficiencia de flujo para estimar el gasto máximo y construir la curva IPR de pozos dañados, sin daño o estimulados.</p>
+        <button class="btn btn-primary" data-go="standing">Abrir calculadora</button>
+      </article>
+      <article class="card">
+        <div class="card-icon">02</div><h3>Método de Jones, Blount y Glaze</h3>
+        <p>Utiliza datos de presión-producción para obtener los parámetros de la recta, estimar el gasto máximo y diagnosticar las condiciones del pozo.</p>
+        <button class="btn btn-primary" data-go="jbg">Abrir calculadora</button>
+      </article>
+      <article class="card">
+        <div class="card-icon">03</div><h3>Fundamentos teóricos</h3>
+        <p>Consulta las ecuaciones, variables y criterios de interpretación utilizados en los procedimientos.</p>
+        <button class="btn btn-primary" data-go="teoria">Consultar teoría</button>
+      </article>
+      <article class="card">
+        <div class="card-icon">04</div><h3>Ejemplos resueltos</h3>
+        <p>Accede a los datos de los ejemplos incluidos en el material de clase para probar las calculadoras.</p>
+        <button class="btn btn-primary" data-go="ejemplos">Ver ejemplos</button>
+      </article>
+    </div>
+    <div class="notice"><strong>Nota académica:</strong> los resultados dependen de los datos y de las unidades introducidas. Esta herramienta reproduce los procedimientos presentados en el material de clase; verifica siempre los supuestos antes de utilizar resultados en un caso real.</div>
+  </section>
+
+  <section id="standing" class="seccion">
+    <div class="page-intro"><span class="eyebrow">CALCULADORA 01</span><h2>Método de Standing</h2><p>Estimación del potencial del pozo considerando la eficiencia de flujo.</p></div>
+    <div class="two-col">
+      <div class="panel">
+        <h3>Datos de entrada</h3>
+        <p class="muted">Introduce los datos de la prueba de producción. Se utiliza la presión estática como aproximación de la presión media del yacimiento cuando así se indique en el problema.</p>
+        <form id="standingForm">
+          <label>Gasto de aceite, q<sub>o</sub> <span>(bpd)</span><input id="st_q" type="number" min="0" step="any" value="800" required></label>
+          <label>Presión de fondo fluyendo, p<sub>wf</sub> <span>(psi)</span><input id="st_pwf" type="number" min="0" step="any" value="2000" required></label>
+          <label>Presión del yacimiento, p<sub>R</sub> <span>(psi)</span><input id="st_pr" type="number" min="0" step="any" value="3000" required></label>
+          <label>Eficiencia de flujo, EF <span>(adimensional)</span><input id="st_ef" type="number" min="0.000001" step="any" value="0.6" required></label>
+          <div class="form-actions"><button class="btn btn-primary" type="submit">Calcular Standing</button><button class="btn btn-light" type="button" id="st_reset">Restablecer</button></div>
+          <p class="form-error" id="st_error" role="alert"></p>
+        </form>
+      </div>
+      <div class="panel result-panel">
+        <h3>Resultados</h3>
+        <div id="st_empty" class="empty-state">Introduce los datos y selecciona «Calcular Standing» para obtener los resultados.</div>
+        <div id="st_results" hidden>
+          <div class="result-grid">
+            <div class="result-box"><span>Presión p′wf</span><strong id="st_pprime">—</strong><small>psi</small></div>
+            <div class="result-box"><span>Potencial sin daño</span><strong id="st_qmax1">—</strong><small>bpd · EF = 1</small></div>
+            <div class="result-box"><span>Gasto máximo con EF</span><strong id="st_qmaxef">—</strong><small>bpd</small></div>
+          </div>
+          <div class="diagnosis" id="st_diagnosis"></div>
+          <h4>Procedimiento de cálculo</h4>
+          <ol id="st_steps" class="steps"></ol>
+        </div>
+      </div>
+    </div>
+    <div class="panel chart-panel">
+      <div class="panel-heading"><div><h3>Curva IPR de Standing</h3><p class="muted">Gasto de aceite contra presión de fondo fluyendo.</p></div><span class="unit-tag">q (bpd) · p<sub>wf</sub> (psi)</span></div>
+      <canvas id="st_chart" height="330" aria-label="Gráfica IPR de Standing"></canvas>
+      <p class="chart-note" id="st_chart_note">La gráfica aparecerá después de realizar el cálculo.</p>
+    </div>
+  </section>
+
+  <section id="jbg" class="seccion">
+    <div class="page-intro"><span class="eyebrow">CALCULADORA 02</span><h2>Método de Jones, Blount y Glaze</h2><p>Separación de las pérdidas de presión darcianas y no darcianas mediante regresión lineal.</p></div>
+    <div class="two-col">
+      <div class="panel">
+        <h3>Datos de entrada</h3>
+        <form id="jbgForm">
+          <label>Presión estática, p<sub>ws</sub> <span>(psi)</span><input id="jbg_pws" type="number" min="0" step="any" value="4500" required></label>
+          <label>Datos de prueba <span>(gasto, presión fluyendo)</span>
+            <textarea id="jbg_data" rows="6" spellcheck="false" required>550,4474
+670,4465
+750,4459
+820,4452</textarea>
+          </label>
+          <p class="help">Escribe un par por renglón, separado por coma: gasto (bpd), presión de fondo fluyendo (psi). Se requieren al menos dos pruebas con gastos distintos.</p>
+          <div class="form-actions"><button class="btn btn-primary" type="submit">Calcular JBG</button><button class="btn btn-light" type="button" id="jbg_reset">Restablecer</button></div>
+          <p class="form-error" id="jbg_error" role="alert"></p>
+        </form>
+      </div>
+      <div class="panel result-panel">
+        <h3>Resultados del análisis</h3>
+        <div id="jbg_empty" class="empty-state">Introduce la presión estática y los datos de las pruebas para obtener el diagnóstico.</div>
+        <div id="jbg_results" hidden>
+          <div class="result-grid">
+            <div class="result-box"><span>Pendiente, a</span><strong id="jbg_a">—</strong><small>según unidades de entrada</small></div>
+            <div class="result-box"><span>Ordenada, b</span><strong id="jbg_b">—</strong><small>según unidades de entrada</small></div>
+            <div class="result-box"><span>Gasto máximo</span><strong id="jbg_qmax">—</strong><small>bpd</small></div>
+            <div class="result-box"><span>Parámetro b′</span><strong id="jbg_bp">—</strong><small> b′ = b + a q<sub>máx</sub></small></div>
+            <div class="result-box"><span>Relación b′/b</span><strong id="jbg_ratio">—</strong><small>adimensional</small></div>
+          </div>
+          <h4>Diagnóstico según los criterios del material</h4>
+          <div id="jbg_diagnosis" class="diagnosis"></div>
+          <h4>Procedimiento de cálculo</h4>
+          <ol id="jbg_steps" class="steps"></ol>
+          <h4>Tabla de datos transformados</h4>
+          <div class="table-wrap"><table><thead><tr><th>Prueba</th><th>q (bpd)</th><th>pws − pwf (psi)</th><th>(pws − pwf)/q</th></tr></thead><tbody id="jbg_table"></tbody></table></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel chart-panel">
+      <div class="panel-heading"><div><h3>Recta de Jones, Blount y Glaze</h3><p class="muted">Representación de (pws − pwf)/q contra q.</p></div><span class="unit-tag">x = q · y = Δp/q</span></div>
+      <canvas id="jbg_chart" height="330" aria-label="Gráfica de regresión lineal JBG"></canvas>
+      <p class="chart-note" id="jbg_chart_note">La gráfica aparecerá después de realizar el cálculo.</p>
+    </div>
+  </section>
+
+  <section id="teoria" class="seccion">
+    <div class="page-intro"><span class="eyebrow">CONSULTA</span><h2>Fundamentos teóricos</h2><p>Resumen de las ecuaciones y criterios contenidos en el material proporcionado.</p></div>
+    <div class="panel theory">
+      <h3>1. Método de Standing</h3>
+      <p>Es una extensión del trabajo de Vogel que incorpora la eficiencia de flujo. El material lo considera para yacimientos de empuje de gas disuelto y pozos dañados o estimulados.</p>
+      <div class="equation">\[ p'_{wf}=p_R-(p_R-p_{wf})EF \]</div>
+      <p>La relación equivalente utilizada para obtener el potencial sin daño es:</p>
+      <div class="equation">\[ \frac{q_o}{q_{o(\max,EF=1)}}=1.8EF\left(1-\frac{p_{wf}}{p_R}\right)-0.8EF^2\left(1-\frac{p_{wf}}{p_R}\right)^2 \]</div>
+      <p>Para calcular el gasto máximo a la eficiencia deseada:</p>
+      <div class="equation">\[
+        q_{o(\max,EF)}=\begin{cases}
+        q_{o(\max,1)}(1.8EF-0.8EF^2), & EF<1,\\
+        q_{o(\max,1)}, & EF=1,\\
+        q_{o(\max,1)}(0.624+0.376EF), & EF>1
+        \end{cases}
+      \]</div>
+      <p>Para EF menor que 1 y EF mayor que 1, la ecuación de la curva indicada en el material es:</p>
+      <div class="equation">\[ q_o=q_{o(\max,1)}\left[1.8EF\left(1-\frac{p_{wf}}{p_R}\right)-0.8EF^2\left(1-\frac{p_{wf}}{p_R}\right)^2\right] \]</div>
+      <p>Para EF = 1 se utiliza la ecuación de Vogel. Para EF mayor que 1, el material señala que la ecuación anterior es válida cuando pwf ≥ pR (1 − 1/EF).</p>
+      <div class="notice"><strong>Convención de entrada:</strong> el formulario solicita pR. En el ejemplo de clase se proporciona pws = 3000 psi; para reproducirlo se introduce ese valor como presión del yacimiento. La equivalencia debe confirmarse según el enunciado de cada problema.</div>
+      <h3>2. Método de Jones, Blount y Glaze</h3>
+      <p>El método representa las restricciones al flujo cerca del pozo y permite distinguir las pérdidas asociadas al flujo no darciano y darciano.</p>
+      <div class="equation">\[ \frac{\Delta p}{q}=aq+b \]</div>
+      <p>La presión diferencial se expresa como:</p>
+      <div class="equation">\[ p_R-p_{wf}=aq_o^2+bq_o \]</div>
+      <p>El gasto máximo se obtiene haciendo pwf = 0 y resolviendo la ecuación cuadrática:</p>
+      <div class="equation">\[ p_R=a q_{o(\max)}^2+bq_{o(\max)} \]</div>
+      <p>El parámetro adicional y su relación son:</p>
+      <div class="equation">\[ b'=b+aq_{o(\max)} \qquad \text{y} \qquad \frac{b'}{b} \]</div>
+      <h3>3. Criterios de diagnóstico JBG</h3>
+      <ul>
+        <li><strong>b ≤ 0.05:</strong> el pozo no presenta daño según el criterio del material; el grado de daño aumenta conforme aumenta b.</li>
+        <li><strong>b′/b ≤ 2:</strong> no existe turbulencia o es pequeña.</li>
+        <li><strong>b ≤ 0.05 y b′/b ≤ 2:</strong> terminación buena.</li>
+        <li><strong>b ≤ 0.05 y b′/b &gt; 2:</strong> no se recomienda estimular; revisar el área del intervalo disparado.</li>
+        <li><strong>b &gt; 0.05 y b′/b ≤ 2:</strong> se recomienda un trabajo de estimulación.</li>
+      </ul>
+      <div class="notice warning"><strong>Alcance:</strong> el material proporcionado no especifica aquí una recomendación completa para el caso combinado b &gt; 0.05 y b′/b &gt; 2. La calculadora lo identifica como caso que requiere evaluación adicional, sin inventar una recomendación.</div>
+    </div>
+  </section>
+
+  <section id="ejemplos" class="seccion">
+    <div class="page-intro"><span class="eyebrow">PRÁCTICA</span><h2>Ejemplos del material de clase</h2><p>Utiliza estos botones para cargar los datos de los ejercicios en las calculadoras.</p></div>
+    <div class="cards">
+      <article class="card">
+        <div class="card-icon">01</div><h3>Ejemplo de Standing</h3>
+        <p>qo = 800 bpd; pwf = 2000 psi; pws = 3000 psi; EF = 0.6. Calcular el gasto máximo con esa eficiencia de flujo.</p>
+        <button class="btn btn-primary" id="load_st_example">Cargar en Standing</button>
+      </article>
+      <article class="card">
+        <div class="card-icon">02</div><h3>Ejemplo de JBG</h3>
+        <p>pws = 4500 psi. Pruebas: (550, 4474), (670, 4465), (750, 4459), (820, 4452), con gasto en bpd y presión en psi.</p>
+        <button class="btn btn-primary" id="load_jbg_example">Cargar en JBG</button>
+      </article>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <strong>UNAM · Facultad de Ingeniería</strong>
+  <span>Ingeniería Petrolera | Productividad de Pozos</span>
+  <span>Elaborado por: Carlos Eduardo Salinas Anaya</span>
+  <small>Herramienta académica de apoyo</small>
+</footer>
+<script src="calculos_daño.js"></script>
+</body>
+</html>
